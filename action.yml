@@ -1,0 +1,29 @@
+name: 'Abgabe Action'
+description: 'A composite action we use to create the code .zip file for our university assignments'
+inputs:
+  filename:
+    description: 'The name of the output .zip file'
+    required: false
+    default: 'Abgabe.zip'
+runs:
+  using: "composite"
+  steps:
+    - name: Delete files not included in release
+      shell: bash
+      run: |
+        FILENAME=".releaseignore"
+        LINES=$(cat $FILENAME)
+        for LINE in $LINES
+        do
+            rm -r $LINE
+        done
+        
+        rm $FILENAME
+                
+    - name: Create release zip
+      shell: bash
+      run: zip -r ${{ inputs.filename }} . -9 -x .git/\*
+        
+    - name: ls -la
+      shell: bash
+      run: ls -la .
